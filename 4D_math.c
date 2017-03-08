@@ -4,7 +4,9 @@
  *  Author:       Rod Grupen
  *  Date:         2-28-89
  *********************************************************************/
-
+#include<string.h>
+#include<stdlib.h>
+#include<math.h>
 void copy_matrix4D(t1,t2)                  /* copy t1 into t2 */
 double t1[4][4],t2[4][4];
 {

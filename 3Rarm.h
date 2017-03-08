@@ -62,11 +62,11 @@
 #define M2                  1.0
 #define M3                  0.8
 #define THETA1_HOME         0.0
-#define THETA1_REF          (M_PI/2.0)
+#define THETA1_REF          (M_PI/18.0)
 #define THETA2_HOME         0.0
-#define THETA2_REF          (5.0*M_PI/8.0)
+#define THETA2_REF          (M_PI/24.0-THETA1_REF)
 #define THETA3_HOME         0.0
-#define THETA3_REF          (M_PI/2.0)
+#define THETA3_REF          (M_PI/18.0-THETA2_REF)
 
 #define RELEASE_POINT   (M_PI/4.0)
 
@@ -97,7 +97,7 @@
 //#define KP_ARM           9000.0
 //#define KD_ARM            200.0
 #define KP_ARM           900.0
-#define KD_ARM            60.0
+#define KD_ARM            20.0
 
 #define SGN(x)   (((x) > 0) ? (1.0) : (-1.0))
 #define SQR(x)   (((x)*(x)))

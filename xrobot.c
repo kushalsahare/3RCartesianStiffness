@@ -36,8 +36,8 @@ unsigned long   foreground, background;
 int arm_color, object_color, grey[100];
 
 int main(argc,argv)
-int argc;
-char **argv;
+  int argc;
+  char **argv;
 {
   int i;
   void x_clear(), x_init_colors(), update_state(), simulate_arm();
@@ -52,21 +52,21 @@ char **argv;
   Widget toplevel, form, widget;
 
   toplevel = XtAppInitialize(&app_con, "Roger-Pitching", NULL, ZERO,
-			     &argc, argv, fallback_resources, NULL, ZERO);
+      &argc, argv, fallback_resources, NULL, ZERO);
   form = XkwMakeForm(toplevel);
   widget = NULL;
   start_w = widget = XkwMakeCommand(form, NULL, widget, x_start_proc,
-				    "Start", BOXW, BOXH);
+      "Start", BOXW, BOXH);
   reset_w = widget = XkwMakeCommand(form, NULL, widget, x_reset_proc,
-				   "Reset", BOXW, BOXH);
+      "Reset", BOXW, BOXH);
   mode_w = widget = XkwMakeCommand(form, NULL, widget, x_mode_proc,
-				   "FREEFALL", BOXW, BOXH);
+      "FREEFALL", BOXW, BOXH);
   widget = XkwMakeCommand(form, NULL, widget, x_quit_proc,
-			  "Quit", BOXW, BOXH);
+      "Quit", BOXW, BOXH);
 
 
   canvas_w = widget = XkwMakeCanvas(form, widget, NULL,
-				    x_canvas_proc, width, height);
+      x_canvas_proc, width, height);
 
   XtRealizeWidget(toplevel);
   display = XtDisplay(canvas_w);
@@ -124,13 +124,13 @@ void x_init_colors()
 }
 
 void x_start_proc(w, client_data, call_data)
-Widget w;
-XtPointer client_data, call_data;
+  Widget w;
+  XtPointer client_data, call_data;
 {
   if(!timer) {
     XkwSetWidgetLabel(start_w, "Stop");
     timer = XtAppAddTimeOut(app_con, TIMER_UPDATE,
-			    x_timer_proc, (XtPointer) NULL);
+        x_timer_proc, (XtPointer) NULL);
   }
   else {
     XkwSetWidgetLabel(start_w, "Start");
@@ -140,8 +140,8 @@ XtPointer client_data, call_data;
 }
 
 void x_mode_proc(w, client_data, call_data)
-Widget w;
-XtPointer client_data, call_data;
+  Widget w;
+  XtPointer client_data, call_data;
 { 
   if (mode==FREEFALL) {
     mode = PD_CONTROL;
@@ -154,8 +154,8 @@ XtPointer client_data, call_data;
 }
 
 void x_reset_proc(w, client_data, call_data)
-Widget w;
-XtPointer client_data, call_data;
+  Widget w;
+  XtPointer client_data, call_data;
 { 
   void update_state();
   int i;
@@ -182,8 +182,8 @@ XtPointer client_data, call_data;
 }
 
 int x_quit_proc(w, client_data, call_data)
-Widget w;
-XtPointer call_data, client_data;
+  Widget w;
+  XtPointer call_data, client_data;
 {
   XFreePixmap(display, pixmap);
   XFreeGC(display, gc);
@@ -192,8 +192,8 @@ XtPointer call_data, client_data;
 }
 
 void x_canvas_proc(w, client_data, call_data)
-Widget w;
-XtPointer call_data, client_data;
+  Widget w;
+  XtPointer call_data, client_data;
 {
   void x_expose(), print_help(), x_clear(),x_expose();
   int x_quit_proc();
@@ -206,46 +206,46 @@ XtPointer call_data, client_data;
   static Dimension nwidth = WIDTH, nheight = HEIGHT;
 
   switch(event->type) {
-	
-  case ConfigureNotify:
-    nwidth = event->xconfigure.width;
-    nheight = event->xconfigure.height;
-    break;
 
-  case Expose:
-    if(nwidth == width && nheight == height)
-      x_expose();
-    else { 
-      /* width = nwidth; height = nheight; */
-      x_expose();
-    }
-    break;
-
-  case ButtonPress:
-    break;
-
-  case ButtonRelease:
-    break;
-
-  case KeyPress:
-    c = XLookupString((XKeyEvent *) event, text, 10, &key, 0);
-    if (c == 1) switch (text[0]) {
-
-    case 'h':
-      print_help();
-      break;
-  
-    case 'c':
-      x_clear();
-      x_expose();
+    case ConfigureNotify:
+      nwidth = event->xconfigure.width;
+      nheight = event->xconfigure.height;
       break;
 
-    case 't':
+    case Expose:
+      if(nwidth == width && nheight == height)
+        x_expose();
+      else { 
+        /* width = nwidth; height = nheight; */
+        x_expose();
+      }
       break;
-      
-    case 'q':
-      x_quit_proc(w, client_data, call_data);
-    }
+
+    case ButtonPress:
+      break;
+
+    case ButtonRelease:
+      break;
+
+    case KeyPress:
+      c = XLookupString((XKeyEvent *) event, text, 10, &key, 0);
+      if (c == 1) switch (text[0]) {
+
+        case 'h':
+          print_help();
+          break;
+
+        case 'c':
+          x_clear();
+          x_expose();
+          break;
+
+        case 't':
+          break;
+
+        case 'q':
+          x_quit_proc(w, client_data, call_data);
+      }
   }
 }
 
@@ -261,8 +261,8 @@ void x_clear()
 }
 
 void x_timer_proc(w, client_data, call_data)
-Widget w;
-XtPointer client_data, call_data;
+  Widget w;
+  XtPointer client_data, call_data;
 {
   void control_arm(), simulate_arm(), simulate_object(), draw_all();
   void compute_contact_forces();
@@ -292,7 +292,7 @@ XtPointer client_data, call_data;
   //  printf("4"); fflush(stdout);
 
   timer = XtAppAddTimeOut(app_con, TIMER_UPDATE,
-			  x_timer_proc, (XtPointer) NULL);
+      x_timer_proc, (XtPointer) NULL);
 }
 
 // compute object.ext_force[2], and robot[NRAMES-1].ext_force[3]
@@ -312,7 +312,7 @@ void compute_contact_forces()
   object.ext_force[X]=object.ext_force[Y] = 0.0;
   robot[NFRAMES-1].ext_force[0] 
     = robot[NFRAMES-1].ext_force[1] 
-       = robot[NFRAMES-1].ext_force[2] = 0.0;
+    = robot[NFRAMES-1].ext_force[2] = 0.0;
 
   dx = x_ball - x_endpt; dy = y_ball - y_endpt;
   mag = sqrt(SQR(dx) + SQR(dy));
@@ -339,7 +339,7 @@ void draw_all()
 }
 
 void draw_circle(cu, cv, r, fill)
-int cu, cv, r, fill;
+  int cu, cv, r, fill;
 {
   if(fill == NOFILL)
     XDrawArc(display, pixmap, gc, cu-r, cv-r, 2*r, 2*r, 0, 64*360);
@@ -356,15 +356,15 @@ void draw_frame()
 
   /* x-axis */
   XDrawLine(display, pixmap, gc,
-	    W2DX(0.0), W2DY(0.0), W2DX(FRAME_L), W2DY(0.0));
+      W2DX(0.0), W2DY(0.0), W2DX(FRAME_L), W2DY(0.0));
   XDrawString(display, pixmap, gc,
-	      W2DX(FRAME_T), W2DY(0.0), "x", 1);
+      W2DX(FRAME_T), W2DY(0.0), "x", 1);
 
   /* y-axis */
   XDrawLine(display, pixmap, gc,
-	    W2DX(0.0), W2DY(0.0), W2DX(0.0), W2DY(FRAME_L)); 
+      W2DX(0.0), W2DY(0.0), W2DX(0.0), W2DY(FRAME_L)); 
   XDrawString(display, pixmap, gc,
-	      W2DX(0.0), W2DY(FRAME_T), "y", 1);
+      W2DX(0.0), W2DY(FRAME_T), "y", 1);
 
 #undef FRAME_L // 0.04
 #undef FRAME_T // 0.045
@@ -374,7 +374,7 @@ void draw_object()
 {
   XSetForeground(display,gc,object_color);
   draw_circle(W2DX(object.position[X]), W2DY(object.position[Y]),
-	      W2DR(R_OBJ), FILL);
+      W2DR(R_OBJ), FILL);
 }
 
 void draw_robot()
@@ -383,6 +383,14 @@ void draw_robot()
   int i, j;
   double theta1, theta2, mag;
   double temp0[4][4], temp1[4][4];
+  double x_endpt, y_endpt; 
+
+  x_endpt = L1*cos(robot[1].theta) + L2*cos(robot[1].theta + robot[2].theta)
+    + L3*cos(robot[1].theta + robot[2].theta + robot[3].theta);
+  y_endpt = L1*sin(robot[1].theta) + L2*sin(robot[1].theta + robot[2].theta)
+    + L3*sin(robot[1].theta + robot[2].theta + robot[3].theta);
+
+
 
   XSetForeground(display,gc,foreground);
   draw_frame();
@@ -393,13 +401,18 @@ void draw_robot()
   for(i=1; i<NFRAMES; i++) {
     matXmat4D(temp0, robot[i].iTj, temp1);
     XDrawLine(display, pixmap, gc,
-		W2DX(temp0[0][3]), W2DY(temp0[1][3]),
-		W2DX(temp1[0][3]), W2DY(temp1[1][3]));
+        W2DX(temp0[0][3]), W2DY(temp0[1][3]),
+        W2DX(temp1[0][3]), W2DY(temp1[1][3]));
     if (i<(NFRAMES-1))
       draw_circle(W2DX(temp1[0][3]),W2DY(temp1[1][3]),W2DR(R_JOINT), NOFILL);
     else {
       XSetForeground(display,gc,object_color);
       draw_circle(W2DX(temp1[0][3]), W2DY(temp1[1][3]),W2DR(R_ENDPT), FILL);
+      if(robot[NFRAMES-1].ext_force[X] || robot[NFRAMES-1].ext_force[Y]){
+        XDrawLine(display, pixmap, gc,
+            W2DX(x_endpt), W2DY(y_endpt),
+            W2DX(robot[NFRAMES-1].ext_force[X]), W2DY(robot[NFRAMES-1].ext_force[Y]));
+      }
     }
     copy_matrix4D(temp1, temp0);
   }
@@ -421,7 +434,7 @@ void draw_ellipsoid()
 
   t1=robot[1].theta; t2=robot[2].theta; t3=robot[3].theta;
   v1=robot[1].theta_dot; v2 = robot[2].theta_dot; v3 = robot[3].theta_dot;
-  
+
   J[0][0] = -L1*sin(t1)-L2*sin(t1+t2)-L3*sin(t1+t2+t3);
   J[0][1] = -L2*sin(t1+t2)-L3*sin(t1+t2+t3);
   J[0][2] = -L3*sin(t1+t2+t3);
@@ -447,7 +460,7 @@ void draw_ellipsoid()
   c = JMJt[0][0]*JMJt[1][1] - JMJt[1][0]*JMJt[0][1];
 
   //  printf("a = %lf b = %lf c = %lf\n", a,b,c);
-      
+
   root[0] = (-b + sqrt(SQR(b)-4.0*a*c)) / (2.0*a);
   root[1] = (-b - sqrt(SQR(b)-4.0*a*c)) / (2.0*a);
 
@@ -468,62 +481,62 @@ void draw_ellipsoid()
   eigenvector[1][0] = dx/mag; eigenvector[1][1] = dy/mag;
   printf("     e1 = %6.4lf: ", eigenvalue[1]);
   printf("e_vec=(%lf %lf)\n", eigenvector[1][0], eigenvector[1][1] );
-  
+
   // the bias terms
   invert2x2(M,Minv);              // first term
   matmult2x2(J, Minv, tmp); // tmp contains J M^{-1}
-  
-  // gravity bias  -J M^{-1} G
-  matxvec2(tmp, G, grav_bias);  grav_bias[0] *= -1.0; grav_bias[1] *= -1.0;
-  printf("     gravity bias=(%lf %lf)\n", grav_bias[0], grav_bias[1]);
-  
-  // velocity bias  -J M^{-1} V + d/dt(J} qdot
-  matxvec2(tmp, V, vel_bias); vel_bias[0] *= -1.0; vel_bias[1] *= -1.0;
-  
-  // second term p. 22 Nakamura
-  vel_bias[0] += (-L1*cos(t1)-L2*cos(t1+t2))*SQR(v1) -
-    (L2*cos(t1+t2)*(2.0*v1*v2 + SQR(v2)));
-  vel_bias[1] += (-L1*sin(t1)-L2*sin(t1+t2))*SQR(v1) -
-    (L2*sin(t1+t2)*(2.0*v1*v2 + SQR(v2)));
 
-  printf("     velocity bias=(%lf %lf)\n", vel_bias[0],vel_bias[1]);
+// gravity bias  -J M^{-1} G
+matxvec2(tmp, G, grav_bias);  grav_bias[0] *= -1.0; grav_bias[1] *= -1.0;
+printf("     gravity bias=(%lf %lf)\n", grav_bias[0], grav_bias[1]);
 
-  // phi=atan2((s[1]*eigenvalue[1]),(s[0]*eigenvalue[0]));
-  // ex = eigenvalue[0]*cos(phi)*eigenvector[0][X] + 
-  //      eigenvalue[1]*sin(phi)*eigenvector[1][Y];
-  // ey = eigenvalue[0]*cos(phi)*eigenvector[0][Y] + 
-  //      eigenvalue[1]*sin(phi)*eigenvector[1][Y];
+// velocity bias  -J M^{-1} V + d/dt(J} qdot
+matxvec2(tmp, V, vel_bias); vel_bias[0] *= -1.0; vel_bias[1] *= -1.0;
 
-  // direction span of ellipsoid
-  // span = sqrt(SQR(ex)+SQR(ey));
-  // printf("span in direction (%6.4lf,%6.4lf): %6.4lf\n\n", 
-  //         s[0],s[1],span);
+// second term p. 22 Nakamura
+vel_bias[0] += (-L1*cos(t1)-L2*cos(t1+t2))*SQR(v1) -
+(L2*cos(t1+t2)*(2.0*v1*v2 + SQR(v2)));
+vel_bias[1] += (-L1*sin(t1)-L2*sin(t1+t2))*SQR(v1) -
+(L2*sin(t1+t2)*(2.0*v1*v2 + SQR(v2)));
 
-  // DRAW THE ELLIPSE AT THE VEL OFFSET FROM THE CURRENT ENDPOINT POSITION
-  posx = L1*cos(t1) + L2*cos(t1+t2) + L3*cos(t1+t2+t3);
-  //  posx += grav_bias[0];
-  posy = L1*sin(t1) + L2*sin(t1+t2) + L3*sin(t1+t2+t3);
-  //  posy += grav_bias[1];
-  draw_circle(W2DX(posx), W2DY(posy), W2DR(R_JOINT), NOFILL);
+printf("     velocity bias=(%lf %lf)\n", vel_bias[0],vel_bias[1]);
 
-  dx0 = eigenvalue[0]*eigenvector[0][X];
-  dy0 = eigenvalue[0]*eigenvector[0][Y];
-  for (theta=M_PI/20.0; theta<2*M_PI; theta += M_PI/20.0) {
-    dx1 = (eigenvalue[0]*cos(theta))*eigenvector[0][X] +
-      (eigenvalue[1]*sin(theta))*eigenvector[1][X];
-    dy1 = (eigenvalue[0]*cos(theta))*eigenvector[0][Y] +
-      (eigenvalue[1]*sin(theta))*eigenvector[1][Y];
-    XDrawLine(display, pixmap, gc,
-	      W2DX((posx + dx0)), 
-	      W2DY((posy + dy0)), 
-	      W2DX((posx + dx1)), 
-	      W2DY((posy + dy1)));
-    dx0 = dx1; dy0 = dy1;
-  }
+// phi=atan2((s[1]*eigenvalue[1]),(s[0]*eigenvalue[0]));
+// ex = eigenvalue[0]*cos(phi)*eigenvector[0][X] + 
+//      eigenvalue[1]*sin(phi)*eigenvector[1][Y];
+// ey = eigenvalue[0]*cos(phi)*eigenvector[0][Y] + 
+//      eigenvalue[1]*sin(phi)*eigenvector[1][Y];
+
+// direction span of ellipsoid
+// span = sqrt(SQR(ex)+SQR(ey));
+// printf("span in direction (%6.4lf,%6.4lf): %6.4lf\n\n", 
+//         s[0],s[1],span);
+
+// DRAW THE ELLIPSE AT THE VEL OFFSET FROM THE CURRENT ENDPOINT POSITION
+posx = L1*cos(t1) + L2*cos(t1+t2) + L3*cos(t1+t2+t3);
+//  posx += grav_bias[0];
+posy = L1*sin(t1) + L2*sin(t1+t2) + L3*sin(t1+t2+t3);
+//  posy += grav_bias[1];
+draw_circle(W2DX(posx), W2DY(posy), W2DR(R_JOINT), NOFILL);
+
+dx0 = eigenvalue[0]*eigenvector[0][X];
+dy0 = eigenvalue[0]*eigenvector[0][Y];
+for (theta=M_PI/20.0; theta<2*M_PI; theta += M_PI/20.0) {
+  dx1 = (eigenvalue[0]*cos(theta))*eigenvector[0][X] +
+    (eigenvalue[1]*sin(theta))*eigenvector[1][X];
+  dy1 = (eigenvalue[0]*cos(theta))*eigenvector[0][Y] +
+    (eigenvalue[1]*sin(theta))*eigenvector[1][Y];
+  XDrawLine(display, pixmap, gc,
+      W2DX((posx + dx0)), 
+      W2DY((posy + dy0)), 
+      W2DX((posx + dx1)), 
+      W2DY((posy + dy1)));
+  dx0 = dx1; dy0 = dy1;
+}
 }
 
 void matmult2x2(A1, A2, ANS)
-double A1[2][2], A2[2][2], ANS[2][2];
+  double A1[2][2], A2[2][2], ANS[2][2];
 {
   ANS[0][0] = A1[0][0]*A2[0][0] + A1[0][1]*A2[1][0];
   ANS[0][1] = A1[0][0]*A2[0][1] + A1[0][1]*A2[1][1];
@@ -533,27 +546,27 @@ double A1[2][2], A2[2][2], ANS[2][2];
 }
 
 void matxvec2(A, in, out)
-double A[2][2],in[2],out[2];
+  double A[2][2],in[2],out[2];
 {
   out[0] = A[0][0]*in[0] + A[0][1]*in[1];
   out[1] = A[1][0]*in[0] + A[1][1]*in[1];
 }
 
 void invert2x2(A,Ainv)
-double A[2][2], Ainv[2][2];
+  double A[2][2], Ainv[2][2];
 {
-   double det;
+  double det;
 
-     det = 1.0 / (A[0][0]*A[1][1] - A[1][0]*A[0][1]);
-      
-     Ainv[0][0] = det * A[1][1];
-     Ainv[1][0] = -1.0 * det * A[1][0];
-     Ainv[0][1] = -1.0 * det * A[0][1];
-     Ainv[1][1] = det * A[0][0];
+  det = 1.0 / (A[0][0]*A[1][1] - A[1][0]*A[0][1]);
+
+  Ainv[0][0] = det * A[1][1];
+  Ainv[1][0] = -1.0 * det * A[1][0];
+  Ainv[0][1] = -1.0 * det * A[0][1];
+  Ainv[1][1] = det * A[0][0];
 }
 
 void transpose2x2(A, At)
-double A[2][2], At[2][2];
+  double A[2][2], At[2][2];
 {
   At[0][0] = A[0][0];
   At[0][1] = A[1][0];
@@ -562,7 +575,7 @@ double A[2][2], At[2][2];
 }
 
 void matcopy2x2(A, B) // A -> B
-double A[2][2], B[2][2];
+  double A[2][2], B[2][2];
 {
   B[0][0] = A[0][0];
   B[0][1] = A[0][1];

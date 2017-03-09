@@ -10,7 +10,7 @@
 #define VERBOSE FALSE
 
 extern Arm robot[NFRAMES];
-extern double P_des[2] = {0.4052, 0.2943};
+extern double P_des[2] = {0.4935, 0.1049};
 extern double K[2][2]={{250.0,0.0},
                        { 0.0,1000.0}};
 
@@ -124,7 +124,7 @@ double clock;
     joint=0;
       for (j=0;j<NFRAMES;++j){
 	if (robot[j].dof_type == REVOLUTE) {
-	  robot[j].torque = tmp[joint] +V[joint] + G[joint] + F[joint];
+	  robot[j].torque = -tmp[joint] +V[joint] + G[joint] + F[joint];
 	  joint++;
 	}
 

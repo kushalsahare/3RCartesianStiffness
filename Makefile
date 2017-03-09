@@ -33,8 +33,9 @@ PROG1 = x
 OFILES1 = xrobot.o \
          3Rarm.o \
          object.o \
-	 4D_math.o \
-	 control.o
+		 4D_math.o \
+		 control.o \
+		 help.o
 
 XKWOFILES = Xkw/Canvas.o Xkw/Slider.o Xkw/Xkw.o
 

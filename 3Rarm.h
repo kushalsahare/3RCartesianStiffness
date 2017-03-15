@@ -79,6 +79,12 @@
 #define R_OBJ               0.0508 /* m - regulation baseball */
 #define M_OBJECT            0.1421 /* kg - regulation baseball */
 
+//Wall
+
+#define H_WALL        0.5 /* m - height of the wall */
+#define W_WALL       0.5 /*m - width of the wall */
+#define M_WALL       0.5 /* kg - mass of the wall */
+
 #define K_COLLIDE    4500.0
 #define B_COLLIDE      5.5
 

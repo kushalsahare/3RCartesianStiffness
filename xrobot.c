@@ -12,6 +12,7 @@
 
 extern Arm robot[NFRAMES];
 extern Obj object;
+extern Obj wall; // wall 
 extern int mode;
 
 double clock=0.0;
@@ -41,7 +42,7 @@ int main(argc,argv)
 {
   int i;
   void x_clear(), x_init_colors(), update_state(), simulate_arm();
-  void simulate_object(), draw_all(), print_help();
+  void simulate_object(), simulate_wall(), draw_all(), print_help();
 
   static String fallback_resources[]={
     "*title:	RRR Cartesian Stiffness Simulator",
@@ -89,6 +90,7 @@ int main(argc,argv)
   update_state();
   simulate_arm();
   simulate_object();
+  simulate_wall();
 
   //  printf("theta = [ %lf  %lf  %lf ]\n", 
   //    	 robot[1].theta, robot[2].theta, robot[3].theta);
@@ -174,10 +176,14 @@ void x_reset_proc(w, client_data, call_data)
   s123 = sin(robot[1].theta + robot[2].theta + robot[3].theta);
   c123 = cos(robot[1].theta + robot[2].theta + robot[3].theta);
 
-  object.position[X] = L1*c1+L2*c12+L3*c123;
-  object.position[Y] = L1*s1+L2*s12+L3*c123;
-  object.velocity[X] = 0.0;
-  object.velocity[Y] = 0.0;
+  //object.position[X] = L1*c1+L2*c12+L3*c123;
+  //object.position[Y] = L1*s1+L2*s12+L3*c123;
+  //object.velocity[X] = 0.0;
+  //object.velocity[Y] = 0.0;
+  wall.position[X] = 0.0;
+  wall.position[Y] = 0.5;
+  wall.velocity[X] = 0.0;
+  wall.velocity[Y] = 0.0;
 
 }
 
@@ -264,9 +270,9 @@ void x_timer_proc(w, client_data, call_data)
   Widget w;
   XtPointer client_data, call_data;
 {
-  void control_arm(), simulate_arm(), simulate_object(), draw_all();
+  void control_arm(), simulate_arm(), simulate_object(), simulate_wall(), draw_all();
   void compute_contact_forces();
-  double x_endpt,y_endpt,x_ball,y_ball;
+  double x_endpt,y_endpt,x_wall,y_wall;
   double d;
   static int render=RENDER_RATE, servo=SERVO_RATE;
 
@@ -283,6 +289,7 @@ void x_timer_proc(w, client_data, call_data)
   //  printf("2a"); fflush(stdout);  
   simulate_object();
   //  printf("3"); fflush(stdout);
+  simulate_wall();
 
   if (render++ == RENDER_RATE) {
     draw_all();
@@ -299,26 +306,30 @@ void x_timer_proc(w, client_data, call_data)
 // due to a possible collision between them
 void compute_contact_forces()
 {
-  double x_endpt, y_endpt, x_ball, y_ball, dx, dy, mag, d;
+  double x_endpt, y_endpt, x_wall, y_wall, dx, dy, mag, d; // x_ball , y_ball
 
   x_endpt = L1*cos(robot[1].theta) + L2*cos(robot[1].theta + robot[2].theta)
     + L3*cos(robot[1].theta + robot[2].theta + robot[3].theta);
   y_endpt = L1*sin(robot[1].theta) + L2*sin(robot[1].theta + robot[2].theta)
     + L3*sin(robot[1].theta + robot[2].theta + robot[3].theta);
 
-  x_ball = object.position[X];
-  y_ball = object.position[Y];
-
+  //x_ball = object.position[X];
+  //y_ball = object.position[Y];
+    x_wall = wall.position[X];
+    y_wall = wall.position[Y];
   object.ext_force[X]=object.ext_force[Y] = 0.0;
   robot[NFRAMES-1].ext_force[0] 
     = robot[NFRAMES-1].ext_force[1] 
     = robot[NFRAMES-1].ext_force[2] = 0.0;
 
-  dx = x_ball - x_endpt; dy = y_ball - y_endpt;
+  dx = x_wall-x_endpt;//x_ball - x_endpt; 
+  dy = y_wall-y_endpt;//y_ball - y_endpt;
   mag = sqrt(SQR(dx) + SQR(dy));
 
-  d = MAX(0.0, (R_OBJ + R_ENDPT - mag));
-
+  //d = MAX(0.0, (R_OBJ + R_ENDPT - mag));
+  
+  d = MAX(0.0, (W_WALL+R_ENDPT -mag));
+  
   object.ext_force[X] = K_COLLIDE*d * dx/mag;
   object.ext_force[Y] = K_COLLIDE*d * dy/mag;
   // force from link NFRAMES-1 on link NFRAMES 
@@ -328,11 +339,12 @@ void compute_contact_forces()
 
 void draw_all()
 {
-  void x_clear(), draw_object(), draw_robot(), x_expose();
+  void x_clear(), draw_wall(), draw_robot(), x_expose(); //draw_object();
   x_clear();
 
   draw_object(); 
   draw_robot();
+  draw_wall();
   //  draw_ellipsoid();
   //  draw_ruler();
   x_expose();
@@ -345,6 +357,10 @@ void draw_circle(cu, cv, r, fill)
     XDrawArc(display, pixmap, gc, cu-r, cv-r, 2*r, 2*r, 0, 64*360);
   else
     XFillArc(display, pixmap, gc, cu-r, cv-r, 2*r, 2*r, 0, 64*360);
+}
+
+void draw_rect(xu, xv, w, h){
+    XFillRectangle(display, pixmap, gc, xu-w, xv-h, w, h);
 }
 
 void draw_frame()
@@ -376,6 +392,16 @@ void draw_object()
   draw_circle(W2DX(object.position[X]), W2DY(object.position[Y]),
       W2DR(R_OBJ), FILL);
 }
+
+void draw_wall()
+{
+  XSetForeground(display,gc,object_color);
+  draw_rect(W2DX(wall.position[X]), W2DY(wall.position[Y]),
+      W2DX(W_WALL), W2DY(H_WALL));
+    //  XFillRectangle(display, pixmap, gc, xu-w*0.5, xv-h*0.5, w, h);
+      //XFillRectangle(display, pixmap, gc, 200, 200, 100, 200);
+}
+
 
 void draw_robot()
 {

@@ -19,6 +19,8 @@ void matrix_copy(int rows, int cols, double t1[rows][cols],
   }
 }
 
+
+
 /** compute the product of two matrices                              */
 /** IN: int m1, int n1, double t1[m1][n1], int n2, double t2[n1][n2] */
 /** OUT: double result[m1][n2]                                       */

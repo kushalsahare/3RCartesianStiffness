@@ -64,9 +64,9 @@
 #define THETA1_HOME         0.0
 #define THETA1_REF          (M_PI/18.0)
 #define THETA2_HOME         0.0
-#define THETA2_REF          (M_PI/24.0-THETA1_REF)
+#define THETA2_REF          (M_PI/24.0)
 #define THETA3_HOME         0.0
-#define THETA3_REF          (M_PI/18.0-THETA2_REF)
+#define THETA3_REF          (M_PI/18.0)
 
 #define RELEASE_POINT   (M_PI/4.0)
 

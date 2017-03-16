@@ -342,7 +342,7 @@ void draw_all()
   void x_clear(), draw_wall(), draw_robot(), x_expose(); //draw_object();
   x_clear();
 
-  draw_object(); 
+  //draw_object(); 
   draw_robot();
   draw_wall();
   //  draw_ellipsoid();

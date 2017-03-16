@@ -3,6 +3,9 @@
 /* Description: compile time constants for 1R robot pitcher               */
 /* Author:      Rod Grupen                                                */
 /* Date:        2-28-2016                                                 */
+/* Edited : Kushal Sahare                                                 */
+/* Date: 3-15-2017                                                        */
+
 /**************************************************************************/
 
 /********************* simulator X display **********************/
@@ -62,11 +65,11 @@
 #define M2                  1.0
 #define M3                  0.8
 #define THETA1_HOME         0.0
-#define THETA1_REF          (M_PI/18.0)
+#define THETA1_REF          (M_PI/8.0)
 #define THETA2_HOME         0.0
-#define THETA2_REF          (M_PI/24.0)
+#define THETA2_REF          (M_PI/4.0)
 #define THETA3_HOME         0.0
-#define THETA3_REF          (M_PI/18.0)
+#define THETA3_REF          (M_PI/8.0)
 
 #define RELEASE_POINT   (M_PI/4.0)
 
@@ -81,7 +84,7 @@
 
 //Wall
 
-#define H_WALL        0.5 /* m - height of the wall */
+#define H_WALL       0.5 /* m - height of the wall */
 #define W_WALL       0.5 /*m - width of the wall */
 #define M_WALL       0.5 /* kg - mass of the wall */
 

@@ -19,22 +19,22 @@ double clock=0.0;
 
 double theta_home[3] = {THETA1_HOME, THETA2_HOME, THETA3_HOME};
 
-void	x_canvas_proc(), x_start_proc(), x_reset_proc(), x_mode_proc();
-int	x_quit_proc();
+void  x_canvas_proc(), x_start_proc(), x_reset_proc(), x_mode_proc();
+int x_quit_proc();
 void    x_Slider_proc(), x_timer_proc();
 
-Display		*display;
-Window		window;
-Pixmap		pixmap;
-XtAppContext	app_con;
-GC		gc;
-int		screen;
-Widget	canvas_w, reset_w, mode_w, start_w, popup_w = NULL;
+Display   *display;
+Window    window;
+Pixmap    pixmap;
+XtAppContext  app_con;
+GC    gc;
+int   screen;
+Widget  canvas_w, reset_w, mode_w, start_w, popup_w = NULL;
 XtIntervalId    timer = 0;
 int             width = WIDTH, height = HEIGHT, depth;
 unsigned long   foreground, background;
 
-int arm_color, object_color, grey[100];
+int arm_color, object_color, wall_color, force_color, grey[100];
 
 int main(argc,argv)
   int argc;
@@ -45,9 +45,9 @@ int main(argc,argv)
   void simulate_object(), simulate_wall(), draw_all(), print_help();
 
   static String fallback_resources[]={
-    "*title:	RRR Cartesian Stiffness Simulator",
-    "*Roger-Pitching*x:	100",
-    "*Roger-Pitching*y:	100",
+    "*title:  RRR Cartesian Stiffness Simulator",
+    "*Roger-Pitching*x: 100",
+    "*Roger-Pitching*y: 100",
     NULL,
   };
   Widget toplevel, form, widget;
@@ -93,7 +93,7 @@ int main(argc,argv)
   simulate_wall();
 
   //  printf("theta = [ %lf  %lf  %lf ]\n", 
-  //    	 robot[1].theta, robot[2].theta, robot[3].theta);
+  //       robot[1].theta, robot[2].theta, robot[3].theta);
 
   draw_all();
 
@@ -122,6 +122,8 @@ void x_init_colors()
     grey[i] = XkwParseColor(display, color_name);
   }
   object_color = XkwParseColor(display, "red");
+  wall_color =XkwParseColor(display, "grey");
+  force_color = XkwParseColor(display, "green");
   arm_color = XkwParseColor(display, "blue");
 }
 
@@ -176,8 +178,8 @@ void x_reset_proc(w, client_data, call_data)
   s123 = sin(robot[1].theta + robot[2].theta + robot[3].theta);
   c123 = cos(robot[1].theta + robot[2].theta + robot[3].theta);
 
-  //object.position[X] = L1*c1+L2*c12+L3*c123;
-  //object.position[Y] = L1*s1+L2*s12+L3*c123;
+  //object.position[X] = 0.2;//L1*c1+L2*c12+L3*c123;
+  //object.position[Y] = 0.0; //L1*s1+L2*s12+L3*c123;
   //object.velocity[X] = 0.0;
   //object.velocity[Y] = 0.0;
   wall.position[X] = 0.0;
@@ -270,7 +272,7 @@ void x_timer_proc(w, client_data, call_data)
   Widget w;
   XtPointer client_data, call_data;
 {
-  void control_arm(), simulate_arm(), simulate_object(), simulate_wall(), draw_all();
+  void control_arm(), simulate_arm(), simulate_wall(), draw_all(); //simulate_object(), 
   void compute_contact_forces();
   double x_endpt,y_endpt,x_wall,y_wall;
   double d;
@@ -287,7 +289,7 @@ void x_timer_proc(w, client_data, call_data)
   //  printf("2"); fflush(stdout);
   simulate_arm();
   //  printf("2a"); fflush(stdout);  
-  simulate_object();
+  //simulate_object();
   //  printf("3"); fflush(stdout);
   simulate_wall();
 
@@ -306,7 +308,7 @@ void x_timer_proc(w, client_data, call_data)
 // due to a possible collision between them
 void compute_contact_forces()
 {
-  double x_endpt, y_endpt, x_wall, y_wall, dx, dy, mag, d; // x_ball , y_ball
+  double x_endpt, y_endpt, x_wall, y_wall, dx, dy, mag, d, x_ball , y_ball ;//
 
   x_endpt = L1*cos(robot[1].theta) + L2*cos(robot[1].theta + robot[2].theta)
     + L3*cos(robot[1].theta + robot[2].theta + robot[3].theta);
@@ -317,32 +319,38 @@ void compute_contact_forces()
   //y_ball = object.position[Y];
     x_wall = wall.position[X];
     y_wall = wall.position[Y];
-  object.ext_force[X]=object.ext_force[Y] = 0.0;
+ 
+  //object.ext_force[X]=object.ext_force[Y] = 0.0;
+ wall.ext_force[X]=wall.ext_force[Y] = 0.0;
   robot[NFRAMES-1].ext_force[0] 
     = robot[NFRAMES-1].ext_force[1] 
     = robot[NFRAMES-1].ext_force[2] = 0.0;
 
-  dx = x_wall-x_endpt;//x_ball - x_endpt; 
-  dy = y_wall-y_endpt;//y_ball - y_endpt;
+  dx = x_wall - x_endpt; //x_ball-x_endpt;//x
+  dy = y_wall - y_endpt; //y_ball-y_endpt;//y_ball - y_endpt;
   mag = sqrt(SQR(dx) + SQR(dy));
 
-  //d = MAX(0.0, (R_OBJ + R_ENDPT - mag));
+ //d = MAX(0.0, (R_OBJ + R_ENDPT - mag));
   
   d = MAX(0.0, (W_WALL+R_ENDPT -mag));
   
-  object.ext_force[X] = K_COLLIDE*d * dx/mag;
-  object.ext_force[Y] = K_COLLIDE*d * dy/mag;
+ //object.ext_force[X] = K_COLLIDE*d * dx/mag;
+// object.ext_force[Y] = K_COLLIDE*d * dy/mag;
+
+ wall.ext_force[X] = K_COLLIDE*d * dx/mag;
+ wall.ext_force[Y] = K_COLLIDE*d * dy/mag;
+
   // force from link NFRAMES-1 on link NFRAMES 
-  robot[NFRAMES-1].ext_force[X] = object.ext_force[X];
-  robot[NFRAMES-1].ext_force[Y] = object.ext_force[Y];
+  robot[NFRAMES-1].ext_force[X] = wall.ext_force[X];
+  robot[NFRAMES-1].ext_force[Y] = wall.ext_force[Y];
 }
 
 void draw_all()
 {
-  void x_clear(), draw_wall(), draw_robot(), x_expose(); //draw_object();
+  void x_clear(), draw_wall(), draw_robot(), x_expose(), draw_object();
   x_clear();
 
-  //draw_object(); 
+ // draw_object(); 
   draw_robot();
   draw_wall();
   //  draw_ellipsoid();
@@ -359,8 +367,10 @@ void draw_circle(cu, cv, r, fill)
     XFillArc(display, pixmap, gc, cu-r, cv-r, 2*r, 2*r, 0, 64*360);
 }
 
-void draw_rect(xu, xv, w, h){
-    XFillRectangle(display, pixmap, gc, xu-w, xv-h, w, h);
+void draw_rect(xu, xv, w, h)
+int xu, xv, w, h;
+{
+    XFillRectangle(display, pixmap, gc, xu, xv, w, h);
 }
 
 void draw_frame()
@@ -395,11 +405,14 @@ void draw_object()
 
 void draw_wall()
 {
-  XSetForeground(display,gc,object_color);
-  draw_rect(W2DX(wall.position[X]), W2DY(wall.position[Y]),
-      W2DX(W_WALL), W2DY(H_WALL));
+  XSetForeground(display,gc,wall_color);
+draw_rect(W2DX(wall.position[X]), W2DY(wall.position[Y]),
+      W2DR(W_WALL), W2DR(H_WALL));
+
+//draw_rect(wall.position[X], wall.position[Y],
+//      W_WALL, H_WALL);
     //  XFillRectangle(display, pixmap, gc, xu-w*0.5, xv-h*0.5, w, h);
-      //XFillRectangle(display, pixmap, gc, 200, 200, 100, 200);
+    //XFillRectangle(display, pixmap, gc, 200, 200, 100, 200);
 }
 
 
@@ -410,6 +423,7 @@ void draw_robot()
   double theta1, theta2, mag;
   double temp0[4][4], temp1[4][4];
   double x_endpt, y_endpt; 
+  int magnitude;
 
   x_endpt = L1*cos(robot[1].theta) + L2*cos(robot[1].theta + robot[2].theta)
     + L3*cos(robot[1].theta + robot[2].theta + robot[3].theta);
@@ -435,9 +449,15 @@ void draw_robot()
       XSetForeground(display,gc,object_color);
       draw_circle(W2DX(temp1[0][3]), W2DY(temp1[1][3]),W2DR(R_ENDPT), FILL);
       if(robot[NFRAMES-1].ext_force[X] || robot[NFRAMES-1].ext_force[Y]){
+        
+
+        magnitude = sqrt(robot[NFRAMES-1].ext_force[X]*robot[NFRAMES-1].ext_force[X] + 
+                            robot[NFRAMES-1].ext_force[Y]*robot[NFRAMES-1].ext_force[Y]) ;
+
+        XSetForeground(display,gc, force_color);
         XDrawLine(display, pixmap, gc,
             W2DX(x_endpt), W2DY(y_endpt),
-            W2DX(robot[NFRAMES-1].ext_force[X]), W2DY(robot[NFRAMES-1].ext_force[Y]));
+            W2DR(robot[NFRAMES-1].ext_force[X]), W2DR(robot[NFRAMES-1].ext_force[Y] ) );
       }
     }
     copy_matrix4D(temp1, temp0);

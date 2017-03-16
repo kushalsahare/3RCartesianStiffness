@@ -52,31 +52,31 @@
 #define TORQUE_MAX         20.0
 
 // Robot
-#define NARMS               1
-#define NLINKS              3
-#define NJOINTS             3
-#define NFRAMES             5
-#define R_JOINT             0.015  /* the radius of a joint */
-#define R_ENDPT             0.045
-#define L1                  0.2020  /* the length of link 1 */ 
-#define L2                  0.2020  /* the length of link 2 */ 
-#define L3                  0.1010    /* the length of link 3 */ 
+#define NARMS           1
+#define NLINKS           3
+#define NJOINTS          3
+#define NFRAMES        5
+#define R_JOINT           0.015  /* the radius of a joint */
+#define R_ENDPT         0.0450
+#define L1                   0.2020  /* the length of link 1 */ 
+#define L2                   0.2020  /* the length of link 2 */ 
+#define L3                   0.1010    /* the length of link 3 */ 
 #define M1                  1.0
 #define M2                  1.0
 #define M3                  0.8
 #define THETA1_HOME         0.0
-#define THETA1_REF          (M_PI/8.0)
+#define THETA1_REF            (M_PI/4.0)
 #define THETA2_HOME         0.0
-#define THETA2_REF          (M_PI/4.0)
+#define THETA2_REF             (M_PI/4.0)
 #define THETA3_HOME         0.0
-#define THETA3_REF          (M_PI/8.0)
+#define THETA3_REF             (M_PI/5.0)
 
-#define RELEASE_POINT   (M_PI/4.0)
+#define RELEASE_POINT        (M_PI/4.0)
 
 #define MIN_X     -0.85
 #define MIN_Y     -0.85
-#define MAX_X      0.85
-#define MAX_Y      0.85
+#define MAX_X     0.85
+#define MAX_Y     0.85
 
 // Baseball
 #define R_OBJ               0.0508 /* m - regulation baseball */
@@ -84,11 +84,11 @@
 
 //Wall
 
-#define H_WALL       0.5 /* m - height of the wall */
-#define W_WALL       0.5 /*m - width of the wall */
+#define H_WALL       0.25 /* m - height of the wall */
+#define W_WALL      0.25 /*m - width of the wall */
 #define M_WALL       0.5 /* kg - mass of the wall */
 
-#define K_COLLIDE    4500.0
+#define K_COLLIDE    5000.0
 #define B_COLLIDE      5.5
 
 #define X                   0

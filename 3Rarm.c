@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "3Rarm.h"
+#include "arm.h"
 
 extern double clock;
 

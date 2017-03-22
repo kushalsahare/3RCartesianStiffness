@@ -35,7 +35,9 @@ OFILES1 = xrobot.o \
          object.o \
 		 4D_math.o \
 		 control.o \
-		 help.o
+		 help.o\
+		 wall.o\
+		 geometry.o
 
 XKWOFILES = Xkw/Canvas.o Xkw/Slider.o Xkw/Xkw.o
 

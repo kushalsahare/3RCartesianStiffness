@@ -6,26 +6,21 @@
 /*************************************************************************/
 #include <math.h>
 #include "3Rarm.h"
+#include "object.h"
 
-extern Arm robot[NFRAMES];
+//extern Arm robot[NFRAMES];
 
 // Obj object; // initialized in xrobot.c
 Obj object ={ M_OBJECT, { 1.0, 1.0}, {0.0, 0.0}, {0.0, 0.0} };
-Obj wall   ={ M_WALL,   { 2.0, 2.0}, {0.0, 0.0}, {0.0, 0.0} };
+//Obj wall   ={ M_WALL,   { 2.0, 2.0}, {0.0, 0.0}, {0.0, 0.0} };
 
-// typedef struct _obj {
-//   double mass;                 // intrinsic parameters 
-//   double position[2];          // position of the centroid of the object
-//   double velocity[2];          // velocity of the centroid of the object
-//   double ext_force[2];         // written by the simulator: endpoint load
-// } Obj;
 
 void simulate_object()
 {
   int i;
   double c1, s1, c12, s12, c123, s123, acc[2];
 
- /* acc[X] = object.ext_force[X]/object.mass - GRAVITY;
+  acc[X] = object.ext_force[X]/object.mass - GRAVITY;
   acc[Y] = object.ext_force[Y]/object.mass;
 
   object.velocity[X] += acc[X] * DT;
@@ -41,8 +36,8 @@ void simulate_object()
   if ((object.position[Y] < (MIN_Y + R_OBJ)) && (object.velocity[Y] < 0.0))
     object.velocity[Y] *= -1.0;                                               
   if ((object.position[Y] > (MAX_Y - R_OBJ)) && (object.velocity[Y] > 0.0))
-    object.velocity[Y] *= -1.0; */
-
+    object.velocity[Y] *= -1.0; 
+/*
   acc[X] = 0.0; //object.ext_force[X]/object.mass - GRAVITY;
   acc[Y] = 0.0; //object.ext_force[Y]/object.mass;
 
@@ -60,9 +55,11 @@ void simulate_object()
     object.velocity[Y] *= 0.0; //-1.0;                                               
   if ((object.position[Y] > (MAX_Y - R_OBJ)) && (object.velocity[Y] > 0.0))
     object.velocity[Y] *= 0.0; //-1.0; 
+*/
+
 }
 
-void simulate_wall()
+/*void simulate_wall()
 {
   int i;
   double c1, s1, c12, s12, c123, s123, acc[2];
@@ -84,4 +81,4 @@ void simulate_wall()
     wall.velocity[Y] *= 0.0; //-1.0;                                               
   if ((wall.position[Y] > (MAX_Y - R_OBJ)) && (wall.velocity[Y] > 0.0))
     wall.velocity[Y] *= 0.0; //-1.0;      
-}
+}*/

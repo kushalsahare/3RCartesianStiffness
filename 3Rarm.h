@@ -53,22 +53,22 @@
 
 // Robot
 #define NARMS           1
-#define NLINKS           3
-#define NJOINTS          3
-#define NFRAMES        5
-#define R_JOINT           0.015  /* the radius of a joint */
+#define NLINKS          3
+#define NJOINTS         3
+#define NFRAMES         5
+#define R_JOINT         0.015  /* the radius of a joint */
 #define R_ENDPT         0.0450
-#define L1                   0.2020  /* the length of link 1 */ 
-#define L2                   0.2020  /* the length of link 2 */ 
-#define L3                   0.1010    /* the length of link 3 */ 
-#define M1                  1.0
-#define M2                  1.0
-#define M3                  0.8
-#define THETA1_HOME         0.0
+#define L1              0.2020  /* the length of link 1 */ 
+#define L2              0.2020  /* the length of link 2 */ 
+#define L3              0.1010    /* the length of link 3 */ 
+#define M1              1.0
+#define M2              1.0
+#define M3              0.8
+#define THETA1_HOME         (M_PI/4.0)-0.5
 #define THETA1_REF            (M_PI/4.0)
-#define THETA2_HOME         0.0
+#define THETA2_HOME         (M_PI/4.0)-0.5
 #define THETA2_REF             (M_PI/4.0)
-#define THETA3_HOME         0.0
+#define THETA3_HOME         (M_PI/5.0)-0.5
 #define THETA3_REF             (M_PI/5.0)
 
 #define RELEASE_POINT        (M_PI/4.0)
@@ -123,21 +123,21 @@
 #define YAXIS               1
 #define ZAXIS               2
 
-typedef struct _arm {
+/*typedef struct _arm {
   double iTj[4][4];
-  int dof_type;     /* revolute or prismatic type */
-  int axis;         /* XAXIS, YAXIS, ZAXIS */
+  int dof_type;     // revolute or prismatic type
+  int axis;         // XAXIS, YAXIS, ZAXIS 
   double theta;
   double theta_dot;
-  double theta_ref; /* for the dof associated with this link */
+  double theta_ref; // for the dof associated with this link 
   double theta_dot_ref;
   double torque;
-  double ext_force[3]; /* (fx,fy) force on distal endpoint of this link */
+  double ext_force[3]; // (fx,fy) force on distal endpoint of this link 
 } Arm;
-
-typedef struct _obj {
+*/
+/*typedef struct _obj {
   double mass;                 // intrinsic parameters 
   double position[2];          // position of the centroid of the object
   double velocity[2];          // velocity of the centroid of the object
   double ext_force[2];         // written by the simulator: endpoint load
-} Obj;
+} Obj;*/

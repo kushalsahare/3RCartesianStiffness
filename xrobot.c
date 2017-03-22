@@ -6,13 +6,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <limits.h> /* For INT_MAX */
+#include <float.h>  /* For DBL_MAX */
 #include "Xkw/Xkw.h"
 
 #include "3Rarm.h"
+#include "arm.h"
+#include "wall.h"
+#include "object.h"
+
+#define DEBUG 1
 
 extern Arm robot[NFRAMES];
 extern Obj object;
-extern Obj wall; // wall 
+extern Wall wall; // wall 
 extern int mode;
 
 double clock=0.0;
@@ -122,10 +129,12 @@ void x_init_colors()
     grey[i] = XkwParseColor(display, color_name);
   }
   object_color = XkwParseColor(display, "red");
-  wall_color =XkwParseColor(display, "grey");
+  wall_color =XkwParseColor(display, "black");
   force_color = XkwParseColor(display, "green");
   arm_color = XkwParseColor(display, "blue");
 }
+
+/***********************************************/
 
 void x_start_proc(w, client_data, call_data)
   Widget w;
@@ -143,6 +152,8 @@ void x_start_proc(w, client_data, call_data)
   }
 }
 
+/*************************************************/
+
 void x_mode_proc(w, client_data, call_data)
   Widget w;
   XtPointer client_data, call_data;
@@ -156,6 +167,7 @@ void x_mode_proc(w, client_data, call_data)
     XkwSetWidgetLabel(mode_w, "FREEFALL");
   }
 }
+/*************************************************/
 
 void x_reset_proc(w, client_data, call_data)
   Widget w;
@@ -182,12 +194,13 @@ void x_reset_proc(w, client_data, call_data)
   //object.position[Y] = 0.0; //L1*s1+L2*s12+L3*c123;
   //object.velocity[X] = 0.0;
   //object.velocity[Y] = 0.0;
-  wall.position[X] = 0.0;
-  wall.position[Y] = 0.5;
+  wall.centroid[X] = 0.0;
+  wall.centroid[Y] = 0.5;
   wall.velocity[X] = 0.0;
   wall.velocity[Y] = 0.0;
 
 }
+/*************************************************/
 
 int x_quit_proc(w, client_data, call_data)
   Widget w;
@@ -198,6 +211,7 @@ int x_quit_proc(w, client_data, call_data)
   XtDestroyApplicationContext(app_con);
   exit(0);
 }
+/*************************************************/
 
 void x_canvas_proc(w, client_data, call_data)
   Widget w;
@@ -256,11 +270,13 @@ void x_canvas_proc(w, client_data, call_data)
       }
   }
 }
+/*************************************************/
 
 void x_expose()
 {
   XCopyArea(display, pixmap, window, gc, 0, 0, width, height, 0, 0);
 }
+/*************************************************/
 
 void x_clear()
 {
@@ -304,11 +320,55 @@ void x_timer_proc(w, client_data, call_data)
       x_timer_proc, (XtPointer) NULL);
 }
 
+
+/*****************************************************************/
+double dist_to_seg(double x1, double y1, double x2, double y2, double pointX, double pointY)
+{
+    double diffX = x2 - x1;
+    float diffY = y2 - y1;
+    if ((diffX == 0) && (diffY == 0))
+    {
+        diffX = pointX - x1;
+        diffY = pointY - y1;
+        return sqrt(diffX * diffX + diffY * diffY);
+    }
+
+    float t = ((pointX - x1) * diffX + (pointY - y1) * diffY) / (diffX * diffX + diffY * diffY);
+
+    if (t < 0)
+    {
+        //point is nearest to the first point i.e x1 and y1
+        diffX = pointX - x1;
+        diffY = pointY - y1;
+    }
+    else if (t > 1)
+    {
+        //point is nearest to the end point i.e x2 and y2
+        diffX = pointX - x2;
+        diffY = pointY - y2;
+    }
+    else
+    {
+        //if perpendicular line intersect the line segment.
+        diffX = pointX - (x1 + t * diffX);
+        diffY = pointY - (y1 + t * diffY);
+    }
+
+    //returning shortest distance
+    return sqrt(diffX * diffX + diffY * diffY);
+}
+/*************************************************/
+
 // compute object.ext_force[2], and robot[NRAMES-1].ext_force[3]
 // due to a possible collision between them
 void compute_contact_forces()
 {
   double x_endpt, y_endpt, x_wall, y_wall, dx, dy, mag, d, x_ball , y_ball ;//
+  double dist[4];
+  int i;
+  int v1, v2; //to store indices of the  vertex 1 and 2;
+  double dist1, dist2; // to store the distance
+  double dist_centroid; // distance of wall from centroid
 
   x_endpt = L1*cos(robot[1].theta) + L2*cos(robot[1].theta + robot[2].theta)
     + L3*cos(robot[1].theta + robot[2].theta + robot[3].theta);
@@ -317,8 +377,8 @@ void compute_contact_forces()
 
   //x_ball = object.position[X];
   //y_ball = object.position[Y];
-    x_wall = wall.position[X];
-    y_wall = wall.position[Y];
+    x_wall = wall.centroid[X];
+    y_wall = wall.centroid[Y];
  
   //object.ext_force[X]=object.ext_force[Y] = 0.0;
  wall.ext_force[X]=wall.ext_force[Y] = 0.0;
@@ -326,13 +386,48 @@ void compute_contact_forces()
     = robot[NFRAMES-1].ext_force[1] 
     = robot[NFRAMES-1].ext_force[2] = 0.0;
 
-  dx = x_wall - x_endpt; //x_ball-x_endpt;//x
+ //find the distance between four edges and the endpoint of the arm
+  for(i =0; i < 4; i++){
+    dx = wall.vertices[X][i]-x_endpt;
+    dy = wall.vertices[Y][i]- y_endpt;
+   dist[i] = hypot(dx, dy);
+   #ifdef DEBUG
+   printf("%f ", dist[i]);
+   #endif
+  }
+
+  printf("\n");
+ // Assumption here is endpoint of the arm will always remain outside
+ // find first two smallest distances and vertices corresponding to them
+ // that will make our edge.
+ 
+   v1 = v2 = -1;
+   dist1 = dist2 = DBL_MAX;
+   for( i=0; i < 4; i++){
+     if(dist[i] < dist1){
+       dist1 = dist[i]; 
+       v1 = i;
+
+     }else if (dist[i] < dist2 && v1 != v2){
+       dist2 = dist[i];
+       v2 = i;
+     }
+
+   }
+
+ #ifdef DEBUG
+  printf("%d %d\n", v1, v2) ;
+ #endif
+ mag = dist_to_seg (wall.vertices[X][v1], wall.vertices[Y][v1], wall.vertices[X][v2], wall.vertices[Y][v2], x_endpt, y_endpt);
+/* dist_centroid = dist_to_seg (wall.vertices[X][v1], wall.vertices[Y][v1], wall.vertices[X][v2], wall.vertices[Y][v2], wall.centroid[X], wall.centroid[Y]); */
+
+ /* dx = x_wall - x_endpt; //x_ball-x_endpt;//x
   dy = y_wall - y_endpt; //y_ball-y_endpt;//y_ball - y_endpt;
   mag = sqrt(SQR(dx) + SQR(dy));
-
+*/
  //d = MAX(0.0, (R_OBJ + R_ENDPT - mag));
   
-  d = MAX(0.0, (W_WALL+R_ENDPT -mag));
+  d = MAX(0.0, (dist_centroid+R_ENDPT -mag));
   
  //object.ext_force[X] = K_COLLIDE*d * dx/mag;
 // object.ext_force[Y] = K_COLLIDE*d * dy/mag;
@@ -344,6 +439,7 @@ void compute_contact_forces()
   robot[NFRAMES-1].ext_force[X] = wall.ext_force[X];
   robot[NFRAMES-1].ext_force[Y] = wall.ext_force[Y];
 }
+/*************************************************/
 
 void draw_all()
 {
@@ -357,6 +453,7 @@ void draw_all()
   //  draw_ruler();
   x_expose();
 }
+/*************************************************/
 
 void draw_circle(cu, cv, r, fill)
   int cu, cv, r, fill;
@@ -366,12 +463,16 @@ void draw_circle(cu, cv, r, fill)
   else
     XFillArc(display, pixmap, gc, cu-r, cv-r, 2*r, 2*r, 0, 64*360);
 }
+/*************************************************/
 
 void draw_rect(xu, xv, w, h)
 int xu, xv, w, h;
 {
-    XFillRectangle(display, pixmap, gc, xu, xv, w, h);
+    //XFillRectangle(display, pixmap, gc, xu, xv, w, h);
+     XDrawRectangle(display, pixmap, gc, xu, xv, w, h);
+
 }
+/*************************************************/
 
 void draw_frame()
 {
@@ -395,6 +496,7 @@ void draw_frame()
 #undef FRAME_L // 0.04
 #undef FRAME_T // 0.045
 }
+/*************************************************/
 
 void draw_object()
 {
@@ -402,11 +504,12 @@ void draw_object()
   draw_circle(W2DX(object.position[X]), W2DY(object.position[Y]),
       W2DR(R_OBJ), FILL);
 }
+/*************************************************/
 
 void draw_wall()
 {
   XSetForeground(display,gc,wall_color);
-draw_rect(W2DX(wall.position[X]), W2DY(wall.position[Y]),
+draw_rect(W2DX(wall.centroid[X]), W2DY(wall.centroid[Y]),
       W2DR(W_WALL), W2DR(H_WALL));
 
 //draw_rect(wall.position[X], wall.position[Y],
@@ -457,7 +560,7 @@ void draw_robot()
         XSetForeground(display,gc, force_color);
         XDrawLine(display, pixmap, gc,
             W2DX(x_endpt), W2DY(y_endpt),
-            W2DR(robot[NFRAMES-1].ext_force[X]), W2DR(robot[NFRAMES-1].ext_force[Y] ) );
+            W2DX(robot[NFRAMES-1].ext_force[X]), W2DY(robot[NFRAMES-1].ext_force[Y] ) );
       }
     }
     copy_matrix4D(temp1, temp0);

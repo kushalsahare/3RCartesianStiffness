@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "3Rarm.h"
+#include "arm.h"
 
 #define VERBOSE FALSE
 #define M_DEBUG 0

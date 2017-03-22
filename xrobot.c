@@ -388,8 +388,8 @@ void compute_contact_forces()
 
  //find the distance between four edges and the endpoint of the arm
   for(i =0; i < 4; i++){
-    dx = wall.vertices[X][i]-x_endpt;
-    dy = wall.vertices[Y][i]- y_endpt;
+    dx = wall.vertices[i][X]-x_endpt;
+    dy = wall.vertices[i][Y]- y_endpt;
    dist[i] = hypot(dx, dy);
    #ifdef DEBUG
    printf("%f ", dist[i]);

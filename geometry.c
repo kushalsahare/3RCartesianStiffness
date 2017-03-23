@@ -2,6 +2,55 @@
 #include "geometry.h"
 #include <math.h>
 #include "3Rarm.h"
+
+intersect_circle_poly(circle c, rect r, point[2]){
+
+int i =0 ;
+double m, c, invb;
+point p1;
+point p2;
+
+double R = c.r; // radius
+double C = c.c; //center
+
+double dx, dy, dr, D, discmt,
+
+line l ;
+
+for int(i =0;  i < 4 ; i++){
+
+p1 = r[i%4];
+p2 = r[(i+1)%4];
+
+/*points_to_line(p1, p2, &l);
+//Ax + By + C = 0
+// y = mx +c 
+
+invb = 1/(l->b);
+m = -(l->a)*invb; // m = -A/B
+c = -(l->c)*invb; // c = -C/B
+*/
+
+dx = p2[X] - p1[X];
+dy = p2[Y] - p1[Y];
+
+dr = dx*dx + dy*dy; // 
+
+D = p1[X]*p2[Y] - p2[X]*p1[Y];
+
+discmt = (R*R*dr-D*D);
+
+if(discmt < 0){
+  continue;
+
+}else{
+   
+
+
+
+
+}
+
 points_to_line(point p1, point p2, line *l)
 {
   if (p1[X] == p2[X]) {
@@ -212,3 +261,25 @@ print_segment(segment s)
   print_point(s.p2);
 }
 
+
+double cross(point v, point w){
+
+return v[x]*w[y] - v[y]*w[x];
+
+}
+
+double dot(point v, point w){
+
+return v[x]*w[x] + v[y]*w[x];
+}
+
+
+/**************************************/
+
+/*function getSpPoint(A,B,C){
+  var x1=A.x, y1=A.y, x2=B.x, y2=B.y, x3=C.x, y3=C.y;
+  var px = x2-x1, py = y2-y1, dAB = px*px + py*py;
+  var u = ((x3 - x1) * px + (y3 - y1) * py) / dAB;
+  var x = x1 + u * px, y = y1 + u * py;
+  return {x:x, y:y}; //this is D
+}*/

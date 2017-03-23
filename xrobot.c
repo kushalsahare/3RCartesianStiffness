@@ -418,6 +418,8 @@ void compute_contact_forces()
  #ifdef DEBUG
   printf("%d %d\n", v1, v2) ;
  #endif
+
+ intersect(circle, rect, point[2]); // find the intersection points
  mag = dist_to_seg (wall.vertices[X][v1], wall.vertices[Y][v1], wall.vertices[X][v2], wall.vertices[Y][v2], x_endpt, y_endpt);
 /* dist_centroid = dist_to_seg (wall.vertices[X][v1], wall.vertices[Y][v1], wall.vertices[X][v2], wall.vertices[Y][v2], wall.centroid[X], wall.centroid[Y]); */
 
@@ -440,6 +442,9 @@ void compute_contact_forces()
   robot[NFRAMES-1].ext_force[Y] = wall.ext_force[Y];
 }
 /*************************************************/
+
+void intersect (circle 
+
 
 void draw_all()
 {

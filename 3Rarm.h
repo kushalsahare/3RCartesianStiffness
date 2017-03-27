@@ -57,7 +57,7 @@
 #define NJOINTS         3
 #define NFRAMES         5
 #define R_JOINT         0.015  /* the radius of a joint */
-#define R_ENDPT         0.0450
+#define R_ENDPT         0.05 /*0.0450*/
 #define L1              0.2020  /* the length of link 1 */ 
 #define L2              0.2020  /* the length of link 2 */ 
 #define L3              0.1010    /* the length of link 3 */ 
@@ -84,11 +84,11 @@
 
 //Wall
 
-#define H_WALL       0.25 /* m - height of the wall */
-#define W_WALL      0.25 /*m - width of the wall */
-#define M_WALL       0.5 /* kg - mass of the wall */
+#define H_WALL       0.25 /* m  - height of the wall */
+#define W_WALL       0.25 /* m  - width of the wall */
+#define M_WALL       0.50 /* kg - mass of the wall */
 
-#define K_COLLIDE    5000.0
+#define K_COLLIDE    45000.0
 #define B_COLLIDE      5.5
 
 #define X                   0

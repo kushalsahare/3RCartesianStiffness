@@ -9,7 +9,7 @@
 
 #include "geometry.h"
 
-#define STATIONARY 1
+#define STATIONARY 0
 
 typedef struct _wall{
   int axis;         /* XAXIS, YAXIS, ZAXIS */

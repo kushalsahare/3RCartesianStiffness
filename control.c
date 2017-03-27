@@ -19,8 +19,10 @@ extern double Kv[3][3]={{10.000,  0.0, 0.0},
 
 
 
-FILE *ofp;
+//FILE *ofp;
 int mode = FREEFALL;
+
+double phi;
 
 void printMatrix( int rows, int cols, double A[rows][cols]){
 
@@ -30,12 +32,9 @@ int j=0;
 for(i =0; i < rows ; i++){
    for(j=0; j< cols ; j++){
    printf("%f ", A[i][j]);  
-}
+   }
    printf("\n"); 
-
-}
-
-
+  }
 }   
 
 void printArray( int n, double A[n]){
@@ -49,6 +48,15 @@ for(i =0; i < n ; i++){
 
 }  
 
+double linearlyInterpolate(double time, double startTime, 
+			   double endTime, double startValue, double endValue) {
+  return startValue + 
+    (time - startTime)*
+    (endValue - startValue)/(endTime - startTime);
+}
+
+
+
 void control_arm(clock)
 double clock;
 { 
@@ -60,6 +68,11 @@ double clock;
   double JT[NJOINTS][2]; // Jacobian transpose
   double temp[NJOINTS][2];
   double Ktheta[NJOINTS][NJOINTS];
+
+  double Jxy[2];
+  double Jc[1][NJOINTS];
+  double Jc_inv[NJOINTS][1];
+
   double tht_error[NJOINTS], tht_mag;
   double theta_error,torq;
   double dxdt1,dxdt2,dxdt3,dydt1,dydt2,dydt3,xdot,ydot,phi;
@@ -79,7 +92,7 @@ double clock;
 
 
 
-   ofp = fopen("force_data.txt", "a+");
+ //  ofp = fopen("force_data.txt", "a+");
    /* for (i=0;i<NARMS;++i) {
       for (j=0;j<NFRAMES;++j){      
 	if (robot[j].dof_type == REVOLUTE) {
@@ -130,11 +143,14 @@ double clock;
    P_curr[X] = L1*c1 + L2*c12 + L3*c123;
    P_curr[Y] = L1*s1 + L2*s12 + L3*s123;
    //printf("Current Position %f %f\n", P_curr[X], P_curr[Y]);
-   printf("Current force %f %f\n", robot[NFRAMES-1].ext_force[X], robot[NFRAMES-1].ext_force[Y]);
-   fprintf(ofp, "%f %f\n", robot[NFRAMES-1].ext_force[X], robot[NFRAMES-1].ext_force[Y] );
+   //printf("Current force %f %f\n", robot[NFRAMES-1].ext_force[X], robot[NFRAMES-1].ext_force[Y]);
+   //fprintf(ofp, "%f %f\n", robot[NFRAMES-1].ext_force[X], robot[NFRAMES-1].ext_force[Y] );
    delta[X] = +P_des[X]-P_curr[X]; 
    delta[Y] = +P_des[Y]-P_curr[Y];
    /*printf("Current delta %f %f\n", delta[X], delta[Y]);*/
+    
+    Jxy[0] = -2*delta[X];
+    Jxy[1] = -2*delta[Y];
 
     J[0][0] = -L1*s1 -L2*s12-L3*s123;
     J[0][1] = -L2*s12-L3*s123;
@@ -147,9 +163,11 @@ double clock;
     /*printf("J = ");
     printMatrix(NJOINTS, 2, J); */
     matrix_transpose(2, NJOINTS, J, JT); // get transpose
+     
+    matrix_mult(1, 2, Jxy, J, NJOINTS, Jc);
     
-    /*printf("J^T= ");
-    printMatrix(2, NJOINTS, JT);*/
+    printf("Jc= ");
+    printMatrix(1, NJOINTS, Jc);
     
     matrix_mult(NJOINTS, 2, JT, 2,K, temp); // temp = J^T*K
     matrix_mult(NJOINTS, 2, temp, NJOINTS, J, Ktheta); // Ktheta = temp*J = J^T*K*J
@@ -194,8 +212,7 @@ double clock;
   }
  }
  
- fclose(ofp);
+ //fclose(ofp);
 
-
-  
+ 
 }

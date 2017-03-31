@@ -37,7 +37,7 @@
 /********************* simulation constants **********************/
 #define TIMEOUT            60        /* seconds worth of simulation       */
 #define DT                  0.0005   /* the time increment between frames */
-#define RENDER_RATE         4        /* render every fourth state         */
+#define RENDER_RATE         5        /* render every fourth state         */
 #define SERVO_RATE          1        /* servo rate at 1000Hz (1 msec)     */
 #define TIMER_UPDATE        5
 #define GRAVITY             9.8
@@ -48,7 +48,7 @@
 #define FREEFALL            0
 #define PD_CONTROL          1
 #define THROW               2
-#define STIFF_CONTROL 3
+#define STIFFNESS_CONTROL   3
 #define TORQUE_MAX         20.0
 
 // Robot
@@ -64,12 +64,12 @@
 #define M1              1.0
 #define M2              1.0
 #define M3              0.8
-#define THETA1_HOME         (M_PI/4.0)-0.5
-#define THETA1_REF            (M_PI/4.0)
-#define THETA2_HOME         (M_PI/4.0)-0.5
-#define THETA2_REF             (M_PI/4.0)
-#define THETA3_HOME         (M_PI/5.0)-0.5
-#define THETA3_REF             (M_PI/5.0)
+#define THETA1_HOME          (M_PI/4.0)-0.4 //0.0          //
+#define THETA1_REF           (M_PI/4.0)     //(M_PI/2.0)    //
+#define THETA2_HOME          (M_PI/4.0)-0.4 // 0.0          // 
+#define THETA2_REF           (M_PI/4.0)     //(5.0*M_PI/8.0)// 
+#define THETA3_HOME          (M_PI/5.0)-0.4//0.0            //
+#define THETA3_REF           (M_PI/5.0)    //(M_PI/2.0)    //
 
 #define RELEASE_POINT        (M_PI/4.0)
 
@@ -88,7 +88,7 @@
 #define W_WALL       0.25 /* m  - width of the wall */
 #define M_WALL       0.50 /* kg - mass of the wall */
 
-#define K_COLLIDE    45000.0
+#define K_COLLIDE    55000.0
 #define B_COLLIDE      5.5
 
 #define X                   0
@@ -105,7 +105,7 @@
 /***** PD CONTROL ******************************************************/
 //#define KP_ARM           9000.0
 //#define KD_ARM            200.0
-#define KP_ARM           900.0
+#define KP_ARM           350.0
 #define KD_ARM            20.0
 
 #define SGN(x)   (((x) > 0) ? (1.0) : (-1.0))

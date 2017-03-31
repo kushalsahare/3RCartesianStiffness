@@ -5,12 +5,13 @@
 /* Date:        3-19-2017                                                */
 /*************************************************************************/
 #include <math.h>
+#include <stdio.h>
 #include "wall.h"
 #include "3Rarm.h"
 #include "geometry.h"
 
 
-
+extern double clock;
 Wall wall= {ZAXIS, /*axis*/
             M_WALL, /*Mass*/ 
             {2.0,2.0}, /*centroid*/
@@ -27,28 +28,35 @@ Wall wall= {ZAXIS, /*axis*/
                   {0.0,0.0,1.0}} /*iTj*/ };
              
 
-//{wall.centroid[X]-W_WALL*0.5 , wall.centroid[X]+W_WALL*0.5, wall.centroid[X]+W_WALL*0.5, wall.centroid[X]-W_WALL*0.5},
-//{wall.centroid[Y]+H_WALL*0.5, wall.centroid[Y]+H_WALL*0.5, wall.centroid[Y]-H_WALL*0.5, wall.centroid[Y]-H_WALL*0.5} 
-
 void simulate_wall()
 {
   int i;
   double c1, s1, acc[2], alpha;
 
-  acc[X] =  (!STATIONARY)*(wall.ext_force[X]/wall.mass - GRAVITY);
-  acc[Y] = (!STATIONARY)*wall.ext_force[Y]/wall.mass;
+  //printf("Simulation wall\n");
 
-  //alpha  = wall.ext_torque/wall.I;
+  acc[X] =0.0 ;// (wall.ext_force[X]/wall.mass - GRAVITY);
+  acc[Y] =0.0 ;// wall.ext_force[Y]/wall.mass;
 
-  wall.velocity[X] += acc[X] * DT;
-  wall.velocity[Y] += acc[Y] * DT;
+  //printf("acc[X]=%f acc[Y]= %f ", acc[X], acc[Y]);
 
- // wall.omega += alpha *DT;
+  wall.velocity[X] += 0.0; //acc[X] * DT;
+  wall.velocity[Y] += 0.0; //acc[Y] * DT;
 
-  wall.centroid[X] += -0.5*(!STATIONARY)*GRAVITY*SQR(DT) + wall.velocity[X]*DT;
-  wall.centroid[Y] += wall.velocity[Y]*DT;
+  wall.centroid[X] =  0.05*sin(24*clock); //wall.velocity[X]*DT-0.5*GRAVITY*SQR(DT);
+  wall.centroid[Y] += 0.00; //wall.velocity[Y]*DT;
 
- // wall.theta += wall
+    wall.vertices[0][X] = wall.centroid[X] - W_WALL*0.5;
+    wall.vertices[0][Y] = wall.centroid[Y] + H_WALL*0.5;
+    
+    wall.vertices[1][X] = wall.centroid[X] + W_WALL*0.5;
+    wall.vertices[1][Y] = wall.centroid[Y] + H_WALL*0.5;
+
+    wall.vertices[2][X] = wall.centroid[X] + W_WALL*0.5;
+    wall.vertices[2][Y] = wall.centroid[Y] - H_WALL*0.5;
+
+    wall.vertices[3][X] = wall.centroid[X] - W_WALL*0.5;
+    wall.vertices[3][Y] = wall.centroid[Y] - H_WALL*0.5;
   
   if ((wall.centroid[X] < (MIN_X + R_OBJ)) && (wall.velocity[X] < 0.0))
     wall.velocity[X] *= -1.0;                                               
@@ -58,25 +66,5 @@ void simulate_wall()
     wall.velocity[Y] *= -1.0;                                               
   if ((wall.centroid[Y] > (MAX_Y - R_OBJ)) && (wall.velocity[Y] > 0.0))
     wall.velocity[Y] *= -1.0; 
-/*
-  acc[X] = 0.0; //wall.ext_force[X]/wall.mass - GRAVITY;
-  acc[Y] = 0.0; //wall.ext_force[Y]/wall.mass;
-
-  wall.velocity[X] += acc[X] * DT;
-  wall.velocity[Y] += acc[Y] * DT;
-
-//  wall.centroid[X] += 0.0; //-0.5*GRAVITY*SQR(DT) + wall.velocity[X]*DT;
-//  wall.centroid[Y] += 0.0;wall.velocity[Y]*DT;
-  
-  if ((wall.centroid[X] < (MIN_X + R_OBJ)) && (wall.velocity[X] < 0.0))
-    wall.velocity[X] *= 0.0; //-1.0;                                               
-  if ((wall.centroid[X] > (MAX_X - R_OBJ)) && (wall.velocity[X] > 0.0))
-    wall.velocity[X] *= 0.0;//-1.0;                                               
-  if ((wall.centroid[Y] < (MIN_Y + R_OBJ)) && (wall.velocity[Y] < 0.0))
-    wall.velocity[Y] *= 0.0; //-1.0;                                               
-  if ((wall.centroid[Y] > (MAX_Y - R_OBJ)) && (wall.velocity[Y] > 0.0))
-    wall.velocity[Y] *= 0.0; //-1.0; 
-*/
-
 }
 

@@ -9,13 +9,13 @@
 
 #include "geometry.h"
 
-#define STATIONARY 0
+#define STATIONARY 1
 
 typedef struct _wall{
   int axis;         /* XAXIS, YAXIS, ZAXIS */
   double mass;         // intrinsic parameters 
   double centroid[2];  // position of the centroid of the object
-  rect vertices;
+  double vertices[4][2];
   double velocity[2];  // velocity of the centroid of the object
   double ext_force[2]; // written by the simulator: endpoint load
   double theta;

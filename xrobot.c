@@ -158,7 +158,7 @@ void x_mode_proc(w, client_data, call_data)
     Widget w;
     XtPointer client_data, call_data;
 { 
-    if (mode==FREEFALL) {
+     if (mode==FREEFALL) {
         mode = PD_CONTROL;
         XkwSetWidgetLabel(mode_w, "PD_CONTROL");
     }
@@ -166,6 +166,23 @@ void x_mode_proc(w, client_data, call_data)
         mode = FREEFALL;
         XkwSetWidgetLabel(mode_w, "FREEFALL");
     }
+
+/*
+switch (mode) {
+     case FREEFALL:
+       XkwSetWidgetLabel(mode_w, "FREEFALL"); break;
+     case PD_CONTROL:
+       XkwSetWidgetLabel(mode_w, "PD_CONTROL"); break;
+     case STIFFNESS_CONTROL:
+       XkwSetWidgetLabel(mode_w, "STIFFNESS_CONTROL"); break;
+     //case TOY_INPUT:
+     //  XkwSetWidgetLabel(input_mode_w, "Input: Ball position"); break;
+     //case MAP_INPUT:
+     //  XkwSetWidgetLabel(input_mode_w, "Input: Map Editor"); break;
+     default: break;
+}
+*/
+
 }
 /*************************************************/
 
@@ -196,8 +213,8 @@ void x_reset_proc(w, client_data, call_data)
     //object.position[Y] = 0.0; //L1*s1+L2*s12+L3*c123;
     //object.velocity[X] = 0.0;
     //object.velocity[Y] = 0.0;
-    wall.centroid[X] = A*sin(omega*clock);
-    wall.centroid[Y] = 0.5;
+    wall.centroid[X] = 0.083469; //0.0
+    wall.centroid[Y] = 0.426546; //0.4
 
     wall.vertices[0][X] = wall.centroid[X] - W_WALL*0.5;
     wall.vertices[0][Y] = wall.centroid[Y] + H_WALL*0.5;
@@ -211,7 +228,7 @@ void x_reset_proc(w, client_data, call_data)
     wall.vertices[3][X] = wall.centroid[X] - W_WALL*0.5;
     wall.vertices[3][Y] = wall.centroid[Y] - H_WALL*0.5;
 
-    wall.velocity[X] = A*omega*cos(omega*clock);
+    wall.velocity[X] = 0.0;
     wall.velocity[Y] = 0.0;
 
 }
@@ -319,11 +336,11 @@ void x_timer_proc(w, client_data, call_data)
 
     //  printf("2"); fflush(stdout);
     simulate_arm();
-    //  printf("2a"); fflush(stdout);  
+     // printf("2a"); fflush(stdout);  
     //simulate_object();
     //  printf("3"); fflush(stdout);
     simulate_wall();
-
+    //    printf("3"); fflush(stdout);
     if (render++ == RENDER_RATE) {
         draw_all();
         render = 1;
@@ -385,16 +402,16 @@ void compute_contact_forces()
     double dist[4];
     int i;
     int ii, jj;
-    int v1, v2; //to store indices of the  vertex 1 and 2;
-    double dist1, dist2; // to store the distance
-    double dist_centroid; // distance of wall from centroid
+
+    char fx[4];
+    char fy[4];
 
     x_endpt = L1*cos(robot[1].theta) + L2*cos(robot[1].theta + robot[2].theta)
         + L3*cos(robot[1].theta + robot[2].theta + robot[3].theta);
     y_endpt = L1*sin(robot[1].theta) + L2*sin(robot[1].theta + robot[2].theta)
         + L3*sin(robot[1].theta + robot[2].theta + robot[3].theta);
     
-    printf(" Hand: %f %f\n", x_endpt, y_endpt);
+   // printf(" Hand: %f %f\n", x_endpt, y_endpt);
     // save the data in circle struct
     circ.r = R_ENDPT;
     circ.c[X] = x_endpt;
@@ -418,9 +435,9 @@ void compute_contact_forces()
 
         // #ifdef DEBUG
         // printf("%f %f \n" , f[X], f[Y]);
-        XDrawPoint(display, pixmap, gc, W2DX(0.1), W2DY(0.1));
-        XDrawLine(display, pixmap, gc,
-                W2DX(0.1), W2DY(0.1), W2DX(0.2), W2DY(0.2));
+        //XDrawPoint(display, pixmap, gc, W2DX(0.1), W2DY(0.1));
+        //XDrawLine(display, pixmap, gc,
+        //        W2DX(0.1), W2DY(0.1), W2DX(0.2), W2DY(0.2));
 
         wall.ext_force[X] = f[X];
         wall.ext_force[Y] = f[Y];
@@ -441,8 +458,8 @@ void compute_contact_forces()
         // draw_object(); 
         draw_robot();
         draw_wall();
-        //  draw_ellipsoid();
-        //  draw_ruler();
+        // draw_ellipsoid();
+        // draw_ruler();
         x_expose();
     }
     /*************************************************/
@@ -514,6 +531,7 @@ void compute_contact_forces()
         double temp0[4][4], temp1[4][4];
         double x_endpt, y_endpt; 
         int magnitude;
+        double u[2];
 
         x_endpt = L1*cos(robot[1].theta) + L2*cos(robot[1].theta + robot[2].theta)
             + L3*cos(robot[1].theta + robot[2].theta + robot[3].theta);
@@ -539,20 +557,23 @@ void compute_contact_forces()
                 XSetForeground(display,gc,object_color);
                 draw_circle(W2DX(temp1[0][3]), W2DY(temp1[1][3]),W2DR(R_ENDPT), FILL);
                 if(robot[NFRAMES-1].ext_force[X] || robot[NFRAMES-1].ext_force[Y]){
-
-
+                   
                     magnitude = sqrt(robot[NFRAMES-1].ext_force[X]*robot[NFRAMES-1].ext_force[X] + 
                             robot[NFRAMES-1].ext_force[Y]*robot[NFRAMES-1].ext_force[Y]) ;
+                    u[X] = robot[NFRAMES-1].ext_force[X] / magnitude;
+                    u[Y] = robot[NFRAMES-1].ext_force[Y] / magnitude;
 
                     XSetForeground(display,gc, force_color);
                     XDrawLine(display, pixmap, gc,
                             W2DX(x_endpt), W2DY(y_endpt),
-                            W2DX(robot[NFRAMES-1].ext_force[X]), W2DY(robot[NFRAMES-1].ext_force[Y] ) );
+                            W2DY( (x_endpt - u[X] ) ), W2DY((y_endpt - u[Y] ) ) );
                 }
             }
             copy_matrix4D(temp1, temp0);
         }
     }
+
+/****************************************************************************************/
 
     void draw_ellipsoid()
     {

@@ -37,7 +37,7 @@ void intersect_circle_poly(circle circ, rect r, double f[2]){
     point C; //center
     C[X] = circ.c[X];
     C[Y] = circ.c[Y];
-    printf("Center :(%f %f)\n ",C[X], C[Y]);
+    //printf("Center :(%f %f)\n ",C[X], C[Y]);
     double dx, dy, dr, D, discmt, inv_dr, dt;
     double inv_len; // 1/ L(P1-P2)
     int sign_dy;
@@ -53,11 +53,11 @@ void intersect_circle_poly(circle circ, rect r, double f[2]){
 
         A[X] = r[i%4][X];
         A[Y]=  r[i%4][Y];
-        printf("%d (%f %f) ",(i%4), A[X], A[Y]);
+        //printf("%d (%f %f) ",(i%4), A[X], A[Y]);
 
         B[X] = r[(i+1)%4][X];
         B[Y]=  r[(i+1)%4][Y];
-        printf("%d (%f %f) ",(i+1)%4, B[X], B[Y]);
+        //printf("%d (%f %f) ",(i+1)%4, B[X], B[Y]);
         
         lAB = sqrt( (B[X]-A[X])*(B[X]-A[X]) + (B[Y]-A[Y])*(B[Y]-A[Y]) );
 
@@ -69,11 +69,11 @@ void intersect_circle_poly(circle circ, rect r, double f[2]){
 
         E[X] = t*dx+A[X];
         E[Y] = t*dy+A[Y];
-        printf(" (%f %f) ", E[X], E[Y]);
+        //printf(" (%f %f) ", E[X], E[Y]);
 
         lEC = sqrt( (E[X]-C[X])*( E[X] -C[X]) +(E[Y]-C[Y])*(E[Y]-C[Y]) ); 
         
-        printf("  %f %f \n", lEC , R);
+        //printf("  %f %f \n", lEC , R);
 
         if( lEC < R )
         {
@@ -88,7 +88,7 @@ void intersect_circle_poly(circle circ, rect r, double f[2]){
             if(t-dt >0 && t-dt < 1){
                 f[X]  += K_COLLIDE* d * (E[X]-C[X]);
                 f[Y]  += K_COLLIDE* d * (E[Y]-C[Y]);
-                printf("%f\n", d);
+          //      printf("%f\n", d);
             }
      //       printf("First point ( %f, %f) \n", F[X], F[Y]);
 
@@ -100,7 +100,7 @@ void intersect_circle_poly(circle circ, rect r, double f[2]){
             if(t+dt > 0 && t+dt < 1){
                 f[X]  += K_COLLIDE* d * (E[X]-C[X]);
                 f[Y]  += K_COLLIDE* d * (E[Y]-C[Y]);
-                printf("%f\n", d);
+            //    printf("%f\n", d);
             }
         }
        // printf("Force ( %f, %f) \n", f[X], f[Y]);

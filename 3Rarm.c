@@ -10,6 +10,12 @@
 #include "arm.h"
 
 extern double clock;
+double P_des[2];
+double K[2][2]={{1.0,0.0},
+                       { 0.0,1000.0}};
+double Kv[3][3]={{10.000,  0.0, 0.0},
+                      { 0.0, 10.000, 0.0},
+                        0.0,  0.0, 10.000};
 
 static double l[3] = {L1, L2, L3};
 static double m[3] = {M1, M2, M3};

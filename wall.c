@@ -43,7 +43,7 @@ void simulate_wall()
   wall.velocity[X] += 0.0; //acc[X] * DT;
   wall.velocity[Y] += 0.0; //acc[Y] * DT;
 
-  wall.centroid[X] =  0.05*sin(24*clock); //wall.velocity[X]*DT-0.5*GRAVITY*SQR(DT);
+  wall.centroid[X] =  0.05*sin(1*clock); //wall.velocity[X]*DT-0.5*GRAVITY*SQR(DT);
   wall.centroid[Y] += 0.00; //wall.velocity[Y]*DT;
 
     wall.vertices[0][X] = wall.centroid[X] - W_WALL*0.5;

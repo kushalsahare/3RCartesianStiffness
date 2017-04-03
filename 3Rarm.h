@@ -47,8 +47,8 @@
 
 #define FREEFALL            0
 #define PD_CONTROL          1
-#define THROW               2
-#define STIFFNESS_CONTROL   3
+#define THROW               3
+#define STIFFNESS_CONTROL   2
 #define TORQUE_MAX         20.0
 
 // Robot
@@ -60,10 +60,10 @@
 #define R_ENDPT         0.05 /*0.0450*/
 #define L1              0.2020  /* the length of link 1 */ 
 #define L2              0.2020  /* the length of link 2 */ 
-#define L3              0.1010    /* the length of link 3 */ 
+#define L3              0.2020    /* the length of link 3 */ 
 #define M1              1.0
 #define M2              1.0
-#define M3              0.8
+#define M3              1.0//0.8
 #define THETA1_HOME          (M_PI/4.0)-0.4 //0.0          //
 #define THETA1_REF           (M_PI/4.0)     //(M_PI/2.0)    //
 #define THETA2_HOME          (M_PI/4.0)-0.4 // 0.0          // 
@@ -72,6 +72,8 @@
 #define THETA3_REF           (M_PI/5.0)    //(M_PI/2.0)    //
 
 #define RELEASE_POINT        (M_PI/4.0)
+
+#define N_INPUT_MODES   3
 
 #define MIN_X     -0.85
 #define MIN_Y     -0.85
@@ -88,7 +90,7 @@
 #define W_WALL       0.25 /* m  - width of the wall */
 #define M_WALL       0.50 /* kg - mass of the wall */
 
-#define K_COLLIDE    55000.0
+#define K_COLLIDE    75000.0
 #define B_COLLIDE      5.5
 
 #define X                   0

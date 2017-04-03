@@ -27,8 +27,8 @@ double clock=0.0;
 double theta_home[3] = {THETA1_HOME, THETA2_HOME, THETA3_HOME};
 
 void  x_canvas_proc(), x_start_proc(), x_reset_proc(), x_mode_proc();
-int x_quit_proc();
-void    x_Slider_proc(), x_timer_proc();
+int   x_quit_proc();
+void  x_Slider_proc(), x_timer_proc();
 
 Display   *display;
 Window    window;
@@ -50,6 +50,7 @@ int main(argc,argv)
     int i;
     void x_clear(), x_init_colors(), update_state(), simulate_arm();
     void simulate_object(), simulate_wall(), draw_all(), print_help();
+    char string[] = "Hello World" ;
 
     static String fallback_resources[]={
         "*title:  RRR Cartesian Stiffness Simulator",
@@ -98,7 +99,9 @@ int main(argc,argv)
     simulate_arm();
     simulate_object();
     simulate_wall();
+    
 
+    XDrawString(display, window, gc, 0, 0, string , strlen(string)); 
     //  printf("theta = [ %lf  %lf  %lf ]\n", 
     //       robot[1].theta, robot[2].theta, robot[3].theta);
 
@@ -152,13 +155,23 @@ void x_start_proc(w, client_data, call_data)
     }
 }
 
+int change_input_mode()
+{
+   static int input_mode=0;
+
+   input_mode = (input_mode + 1) % N_INPUT_MODES;
+   //init_input_flag = TRUE;
+   return (input_mode);
+}
+
+
 /*************************************************/
 
 void x_mode_proc(w, client_data, call_data)
     Widget w;
     XtPointer client_data, call_data;
 { 
-     if (mode==FREEFALL) {
+  /*   if (mode==FREEFALL) {
         mode = PD_CONTROL;
         XkwSetWidgetLabel(mode_w, "PD_CONTROL");
     }
@@ -166,8 +179,11 @@ void x_mode_proc(w, client_data, call_data)
         mode = FREEFALL;
         XkwSetWidgetLabel(mode_w, "FREEFALL");
     }
+*/
 
-/*
+mode = change_input_mode();
+printf("Printing Input mode = %d\n" , mode);
+
 switch (mode) {
      case FREEFALL:
        XkwSetWidgetLabel(mode_w, "FREEFALL"); break;
@@ -181,7 +197,7 @@ switch (mode) {
      //  XkwSetWidgetLabel(input_mode_w, "Input: Map Editor"); break;
      default: break;
 }
-*/
+
 
 }
 /*************************************************/
@@ -213,8 +229,8 @@ void x_reset_proc(w, client_data, call_data)
     //object.position[Y] = 0.0; //L1*s1+L2*s12+L3*c123;
     //object.velocity[X] = 0.0;
     //object.velocity[Y] = 0.0;
-    wall.centroid[X] = 0.083469; //0.0
-    wall.centroid[Y] = 0.426546; //0.4
+    wall.centroid[X] = 0.024108;//(for link 3 = 0.0101 --> 0.083469; //0.0
+    wall.centroid[Y] = 0.508257;//(for link 3 = --//-- --> 0.426546; //0.4
 
     wall.vertices[0][X] = wall.centroid[X] - W_WALL*0.5;
     wall.vertices[0][Y] = wall.centroid[Y] + H_WALL*0.5;
@@ -537,8 +553,6 @@ void compute_contact_forces()
             + L3*cos(robot[1].theta + robot[2].theta + robot[3].theta);
         y_endpt = L1*sin(robot[1].theta) + L2*sin(robot[1].theta + robot[2].theta)
             + L3*sin(robot[1].theta + robot[2].theta + robot[3].theta);
-
-
 
         XSetForeground(display,gc,foreground);
         draw_frame();
